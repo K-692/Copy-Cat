@@ -19,6 +19,7 @@
 
 ## 📑 Table of Contents
 
+- [💡 Why Copy-Cat?](#-why-copy-cat)
 - [🌟 Key Features](#-key-features)
 - [📁 Project Architecture](#-project-architecture)
 - [🚀 Quick Start & Installation](#-quick-start--installation)
@@ -31,6 +32,16 @@
 - [🔒 macOS Permissions Notice](#-macos-permissions-notice)
 - [⚙️ Configuration Options](#️-configuration-options)
 - [⌨️ Keyboard Shortcuts](#️-keyboard-shortcuts)
+
+---
+
+## 💡 Why Copy-Cat?
+
+> **Has it ever happened to you that you wrote something for a very long time, and then either forgot to save it or lost it completely due to an unexpected system crash or failure?**
+>
+> **Copy-Cat solves this problem once and for all by saving your keystrokes live in the background.**
+>
+> This allows you to retrieve **at least 70%–100%** of your lost text depending on how you write *(which you will quickly understand and appreciate while using Copy-Cat 😁)*!
 
 ---
 
@@ -103,8 +114,8 @@ copy_cat/
 
 ```bash
 # Clone repository
-git clone https://github.com/your-username/copy_cat.git
-cd copy_cat
+git clone https://github.com/K-692/Copy-Cat.git
+cd Copy-Cat
 
 # Create & activate virtual environment (macOS / Linux):
 python3 -m venv venv
