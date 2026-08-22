@@ -11,6 +11,8 @@ Features:
 """
 
 import logging
+import os
+import subprocess
 import tkinter as tk
 from tkinter import font as tkfont
 from typing import List, Dict, Any, Optional
@@ -20,6 +22,7 @@ import pyperclip
 from copy_cat.config import (
     FONT_FAMILY_PRIMARY,
     FONT_FAMILY_MONO,
+    IS_MACOS,
     LOGO_PATH,
     POPUP_DEFAULT_WIDTH,
     POPUP_DEFAULT_HEIGHT,
@@ -128,6 +131,10 @@ class ModernPopupUI:
         self.root = tk.Tk()
         self.root.title("Copy Cat — Memory Retrieval")
 
+        # Set borderless floating window attributes FIRST before setting geometry
+        self.root.overrideredirect(True)
+        self.root.attributes("-topmost", True)
+
         # Compute screen dimensions and bottom-left coordinate
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
@@ -135,10 +142,8 @@ class ModernPopupUI:
         pos_x = POPUP_MARGIN_LEFT
         pos_y = max(0, screen_height - self.height - POPUP_MARGIN_BOTTOM)
 
-        # Set geometry and window properties
+        # Explicitly position window at bottom-left corner
         self.root.geometry(f"{self.width}x{self.height}+{pos_x}+{pos_y}")
-        self.root.overrideredirect(True)        # Borderless floating window
-        self.root.attributes("-topmost", True)  # Always on top
 
         # Set application icon if supported
         self._logo_image = self._load_logo_image(size=24)
@@ -347,11 +352,33 @@ class ModernPopupUI:
         self.preview_text.bind("<Down>", self._on_arrow_down)
         self.preview_text.bind("<Up>", self._on_arrow_up)
 
-        # Set focus to left listbox panel by default
+        # Ensure bottom-left geometry is maintained after layout completion
+        self.root.update_idletasks()
+        self.root.geometry(f"{self.width}x{self.height}+{pos_x}+{pos_y}")
+
+        # Set focus to left listbox panel by default and bring to foreground
         self.root.lift()
         self.root.attributes("-topmost", True)
         self.root.focus_force()
         self.listbox.focus_set()
+
+        # On macOS, activate process so it is the active selected window by default
+        if IS_MACOS:
+            try:
+                import AppKit
+                AppKit.NSApplication.sharedApplication().activateIgnoringOtherApps_(True)
+            except Exception:
+                try:
+                    pid = os.getpid()
+                    script = f'''tell application "System Events"
+                        set procList to (every process whose unix id is {pid})
+                        if (count of procList) > 0 then
+                            set frontmost of item 1 of procList to true
+                        end if
+                    end tell'''
+                    subprocess.Popen(["osascript", "-e", script])
+                except Exception:
+                    pass
 
         # Flag UI as active so background listener suspends keystroke recording
         self.file_io.set_ui_active(True)
