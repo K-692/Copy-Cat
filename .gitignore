@@ -1,0 +1,55 @@
+# ==============================================================================
+# Copy Cat — Git Ignore Rules
+# ==============================================================================
+
+# Python Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Local Runtime Data Files & Locks
+memory.txt
+memory.txt.lock
+timer.txt
+timer.txt.lock
+cache.txt
+cache.txt.lock
+*.lock
+
+# Operating System Files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Icon
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE & Editor Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# Logs & Temporary Files
+*.log
+*.tmp
+/tmp/

@@ -1,0 +1,12 @@
+# Keystroke & Mouse Event Logging
+pynput>=1.7.6
+
+# File Synchronization & Concurrency Safety
+filelock>=3.13.1
+
+# Cross-platform Clipboard Integration
+pyperclip>=1.8.2
+
+# Image Processing & UI Icon Rendering
+pillow>=10.0.0
+

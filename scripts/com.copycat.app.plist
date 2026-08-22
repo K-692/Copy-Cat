@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  macOS LaunchAgent Configuration for Copy Cat Application.
+  Place this file in ~/Library/LaunchAgents/com.copycat.app.plist
+  or use `scripts/install_mac.sh` to install and configure it automatically.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.copycat.app</string>
+    <key>ProgramArguments</key>
+    <array>
+        <!-- Full path to your virtual environment python interpreter -->
+        <string>{{PYTHON_EXECUTABLE}}</string>
+        <!-- Full path to main.py -->
+        <string>{{MAIN_SCRIPT}}</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>{{WORKING_DIRECTORY}}</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/copycat.stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/copycat.stderr.log</string>
+</dict>
+</plist>

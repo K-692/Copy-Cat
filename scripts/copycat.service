@@ -1,0 +1,21 @@
+# ==============================================================================
+# Linux systemd User Service Unit for Copy Cat
+# Place in ~/.config/systemd/user/copycat.service
+# Or use `scripts/install_linux.sh` to install and enable automatically.
+# ==============================================================================
+
+[Unit]
+Description=Copy Cat Background Keystroke Logger & Retrieval Service
+After=graphical-session.target
+
+[Service]
+Type=simple
+WorkingDirectory={{WORKING_DIRECTORY}}
+ExecStart={{PYTHON_EXECUTABLE}} {{MAIN_SCRIPT}}
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
