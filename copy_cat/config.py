@@ -34,13 +34,13 @@ IS_LINUX = sys.platform.startswith("linux")
 # Assets and Branding
 LOGO_PATH = BASE_DIR / "logo.png"
 
-# UI Popup Geometry & Positioning (Compact & Adjustable)
-POPUP_DEFAULT_WIDTH = 580                # Default window width in pixels
-POPUP_DEFAULT_HEIGHT = 380               # Default window height in pixels
-POPUP_MIN_WIDTH = 420                    # Minimum allowable window width
-POPUP_MIN_HEIGHT = 260                   # Minimum allowable window height
-POPUP_MARGIN_LEFT = 24                   # Screen margin from left edge (pixels)
-POPUP_MARGIN_BOTTOM = 48                 # Screen margin above bottom edge (pixels, accounts for dock/taskbar)
+# UI Popup Geometry & Positioning (Compact & Space-Optimized)
+POPUP_DEFAULT_WIDTH = 460                # Default compact window width in pixels
+POPUP_DEFAULT_HEIGHT = 270               # Default compact window height in pixels
+POPUP_MIN_WIDTH = 360                    # Minimum allowable window width
+POPUP_MIN_HEIGHT = 200                   # Minimum allowable window height
+POPUP_MARGIN_LEFT = 16                   # Screen margin from left edge (pixels)
+POPUP_MARGIN_BOTTOM = 36                 # Screen margin above bottom edge (pixels)
 
 # Cross-platform font family mappings for Tkinter UI
 if IS_MACOS:

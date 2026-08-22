@@ -146,7 +146,7 @@ class ModernPopupUI:
         self.root.geometry(f"{self.width}x{self.height}+{pos_x}+{pos_y}")
 
         # Set application icon if supported
-        self._logo_image = self._load_logo_image(size=24)
+        self._logo_image = self._load_logo_image(size=20)
         if self._logo_image:
             try:
                 self.root.iconphoto(True, self._logo_image)
@@ -166,17 +166,17 @@ class ModernPopupUI:
 
         self.root.configure(bg=bg_dark, highlightthickness=1, highlightbackground=border_color)
 
-        # Cross-platform Fonts
-        title_font = tkfont.Font(family=FONT_FAMILY_PRIMARY, size=11, weight="bold")
-        body_font = tkfont.Font(family=FONT_FAMILY_PRIMARY, size=10)
+        # Cross-platform Fonts (Compact & Crisp)
+        title_font = tkfont.Font(family=FONT_FAMILY_PRIMARY, size=10, weight="bold")
+        body_font = tkfont.Font(family=FONT_FAMILY_PRIMARY, size=9)
         mono_font = tkfont.Font(family=FONT_FAMILY_MONO, size=9)
         badge_font = tkfont.Font(family=FONT_FAMILY_PRIMARY, size=8, weight="bold")
         hint_font = tkfont.Font(family=FONT_FAMILY_PRIMARY, size=8)
 
         # =========================================================================
-        # 1. Top Header Bar (Draggable)
+        # 1. Top Header Bar (Draggable & Compact)
         # =========================================================================
-        header_frame = tk.Frame(self.root, bg=bg_dark, pady=6, padx=10)
+        header_frame = tk.Frame(self.root, bg=bg_dark, pady=4, padx=8)
         header_frame.pack(fill=tk.X)
 
         # Enable dragging the window by the header
@@ -191,7 +191,7 @@ class ModernPopupUI:
 
         if self._logo_image:
             logo_label = tk.Label(title_box, image=self._logo_image, bg=bg_dark)
-            logo_label.pack(side=tk.LEFT, padx=(0, 6))
+            logo_label.pack(side=tk.LEFT, padx=(0, 5))
             logo_label.bind("<Button-1>", self._start_drag)
             logo_label.bind("<B1-Motion>", self._on_drag)
 
@@ -218,14 +218,14 @@ class ModernPopupUI:
             fg=fg_muted,
             bg=bg_dark,
         )
-        self.status_label.pack(side=tk.RIGHT, padx=(4, 0))
+        self.status_label.pack(side=tk.RIGHT, padx=(2, 0))
         self.status_label.bind("<Button-1>", self._start_drag)
         self.status_label.bind("<B1-Motion>", self._on_drag)
 
         # =========================================================================
         # 2. Search Bar
         # =========================================================================
-        search_frame = tk.Frame(self.root, bg=bg_dark, padx=10, pady=2)
+        search_frame = tk.Frame(self.root, bg=bg_dark, padx=8, pady=2)
         search_frame.pack(fill=tk.X)
 
         self.search_var = tk.StringVar()
@@ -243,17 +243,18 @@ class ModernPopupUI:
             highlightbackground=accent_blue,
             highlightcolor=accent_glow,
         )
-        self.search_entry.pack(fill=tk.X, ipady=4, ipadx=6)
+        self.search_entry.pack(fill=tk.X, ipady=2, ipadx=4)
 
         # =========================================================================
         # 3. Split Content Area (Snippets Listbox + Detail Preview)
         # =========================================================================
-        content_frame = tk.Frame(self.root, bg=bg_dark, padx=10, pady=6)
+        content_frame = tk.Frame(self.root, bg=bg_dark, padx=8, pady=3)
         content_frame.pack(fill=tk.BOTH, expand=True)
 
-        # Left Column: Snippets Listbox
-        list_container = tk.Frame(content_frame, bg=bg_card, highlightthickness=1, highlightbackground=border_color)
-        list_container.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 4))
+        # Left Column: Snippets Listbox (Fixed compact width for timestamp display)
+        list_container = tk.Frame(content_frame, bg=bg_card, highlightthickness=1, highlightbackground=border_color, width=145)
+        list_container.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 3))
+        list_container.pack_propagate(False)
 
         self.listbox = tk.Listbox(
             list_container,
@@ -269,9 +270,9 @@ class ModernPopupUI:
         self.listbox.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
         self.listbox.bind("<<ListboxSelect>>", self._on_listbox_select)
 
-        # Right Column: Detail Preview Box
+        # Right Column: Detail Preview Box (Takes remaining space for reading)
         preview_container = tk.Frame(content_frame, bg=bg_card, highlightthickness=1, highlightbackground=border_color)
-        preview_container.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=(4, 0))
+        preview_container.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=(3, 0))
 
         self.preview_header = tk.Label(
             preview_container,
@@ -280,8 +281,8 @@ class ModernPopupUI:
             fg=accent_glow,
             bg=bg_card,
             anchor="w",
-            padx=6,
-            pady=4,
+            padx=4,
+            pady=3,
         )
         self.preview_header.pack(fill=tk.X)
 
@@ -295,12 +296,12 @@ class ModernPopupUI:
             highlightthickness=0,
             state=tk.DISABLED,
         )
-        self.preview_text.pack(fill=tk.BOTH, expand=True, padx=6, pady=(0, 4))
+        self.preview_text.pack(fill=tk.BOTH, expand=True, padx=4, pady=(0, 3))
 
         # =========================================================================
         # 4. Bottom Footer & Resize Grip Bar
         # =========================================================================
-        footer_frame = tk.Frame(self.root, bg=bg_dark, padx=10, pady=3)
+        footer_frame = tk.Frame(self.root, bg=bg_dark, padx=8, pady=2)
         footer_frame.pack(fill=tk.X, side=tk.BOTTOM)
 
         footer_hint = tk.Label(
@@ -316,7 +317,7 @@ class ModernPopupUI:
         self.resize_grip = tk.Label(
             footer_frame,
             text="⇲",
-            font=tkfont.Font(family=FONT_FAMILY_PRIMARY, size=11),
+            font=tkfont.Font(family=FONT_FAMILY_PRIMARY, size=10),
             fg=fg_muted,
             bg=bg_dark,
             cursor="sizing",

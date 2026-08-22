@@ -269,12 +269,12 @@ All timing thresholds, geometry settings, and font mappings can be customized in
 
 | Constant | Default Value | Description |
 |---|---|---|
-| `POPUP_DEFAULT_WIDTH` | `580` | Default width of retrieval popup in pixels |
-| `POPUP_DEFAULT_HEIGHT` | `380` | Default height of retrieval popup in pixels |
-| `POPUP_MIN_WIDTH` | `420` | Minimum allowable width when resizing |
-| `POPUP_MIN_HEIGHT` | `260` | Minimum allowable height when resizing |
-| `POPUP_MARGIN_LEFT` | `24` | Distance in pixels from screen left edge |
-| `POPUP_MARGIN_BOTTOM` | `48` | Distance in pixels from screen bottom edge |
+| `POPUP_DEFAULT_WIDTH` | `460` | Default width of retrieval popup in pixels |
+| `POPUP_DEFAULT_HEIGHT` | `270` | Default height of retrieval popup in pixels |
+| `POPUP_MIN_WIDTH` | `360` | Minimum allowable width when resizing |
+| `POPUP_MIN_HEIGHT` | `200` | Minimum allowable height when resizing |
+| `POPUP_MARGIN_LEFT` | `16` | Distance in pixels from screen left edge |
+| `POPUP_MARGIN_BOTTOM` | `36` | Distance in pixels from screen bottom edge |
 | `PAUSE_THRESHOLD_SECONDS` | `10.0` | Inactivity interval that starts a new timestamped paragraph |
 | `BACKSPACE_TIMEOUT_SECONDS` | `5.0` | Maximum continuous typing duration allowed for backspace deletion |
 | `MEMORY_WIPE_INTERVAL_SECONDS` | `259200.0` | Rolling expiration lifespan per entry (3 days = 72 hours) |
