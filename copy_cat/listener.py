@@ -317,6 +317,20 @@ class KeystrokeListener:
         self._is_running = True
         logger.info("Keystroke and mouse listeners started successfully.")
 
+        if IS_MACOS:
+            try:
+                import ctypes
+                import ctypes.util
+                app_services = ctypes.cdll.LoadLibrary(ctypes.util.find_library("ApplicationServices"))
+                if not app_services.AXIsProcessTrusted():
+                    logger.warning(
+                        "⚠️  macOS Accessibility permission is NOT granted for Python! "
+                        "Global keystroke logging and hotkey detection are blocked by macOS until enabled. "
+                        "Please go to System Settings -> Privacy & Security -> Accessibility (and Input Monitoring) and enable Python."
+                    )
+            except Exception:
+                pass
+
     def stop(self) -> None:
         """
         Stop both keyboard and mouse listeners cleanly.
