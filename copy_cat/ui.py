@@ -119,63 +119,6 @@ class ModernPopupUI:
                 logger.warning("Could not load logo image: %s", e2)
                 return None
 
-    def _create_responsive_button(
-        self,
-        parent: tk.Widget,
-        text: str,
-        command: Any,
-        default_bg: str = "#27272a",
-        default_fg: str = "#a1a1aa",
-        hover_bg: str = "#6366f1",
-        hover_fg: str = "#ffffff",
-        active_bg: str = "#4f46e5",
-        font_size: int = 9,
-        padx: int = 6,
-        pady: int = 2,
-    ) -> tk.Label:
-        """
-        Creates a custom, highly responsive button widget using a Tkinter Label.
-        Guarantees 100% surface area hit-testing across macOS, Windows, and Linux.
-        Clicking ANYWHERE inside the entire rectangular boundary triggers the command immediately.
-        """
-        btn = tk.Label(
-            parent,
-            text=text,
-            font=tkfont.Font(family=FONT_FAMILY_PRIMARY, size=font_size, weight="bold"),
-            fg=default_fg,
-            bg=default_bg,
-            padx=padx,
-            pady=pady,
-            cursor="hand2",
-            relief=tk.FLAT,
-            bd=0,
-            highlightthickness=0,
-            justify=tk.CENTER,
-        )
-
-        def on_click(event):
-            btn.config(bg=active_bg, fg=hover_fg)
-            command()
-            return "break"
-
-        def on_enter(event):
-            btn.config(bg=hover_bg, fg=hover_fg)
-
-        def on_leave(event):
-            btn.config(bg=default_bg, fg=default_fg)
-
-        btn.bind("<Button-1>", on_click)
-        btn.bind(
-            "<ButtonRelease-1>",
-            lambda e: btn.config(
-                bg=hover_bg if (0 <= e.x <= btn.winfo_width() and 0 <= e.y <= btn.winfo_height()) else default_bg
-            ),
-        )
-        btn.bind("<Enter>", on_enter)
-        btn.bind("<Leave>", on_leave)
-
-        return btn
-
     def _create_and_run_window(self) -> None:
         """
         Construct, style, and render the Tkinter window.
@@ -258,27 +201,11 @@ class ModernPopupUI:
         header_title.bind("<Button-1>", self._start_drag)
         header_title.bind("<B1-Motion>", self._on_drag)
 
-        # Right subframe: Navigation buttons & status hints
+        # Right subframe: Status & keyboard shortcut hints
         right_header = tk.Frame(header_frame, bg=bg_dark)
         right_header.pack(side=tk.RIGHT)
 
-        # Close button [✕] in header - responsive full surface area
-        close_btn = self._create_responsive_button(
-            parent=right_header,
-            text="✕",
-            command=self.close,
-            default_bg=bg_dark,
-            default_fg=fg_muted,
-            hover_bg="#ef4444",
-            hover_fg=fg_white,
-            active_bg="#dc2626",
-            font_size=10,
-            padx=6,
-            pady=2,
-        )
-        close_btn.pack(side=tk.RIGHT, padx=(6, 0))
-
-        # Status / Feedback label with Navigation key beside Enter key
+        # Status / Feedback label (Navigation, Enter copy, Esc close hints)
         self.status_label = tk.Label(
             right_header,
             text="[↑/↓] Navigate  •  [Enter] Copy  •  [Esc] Close",
@@ -289,40 +216,6 @@ class ModernPopupUI:
         self.status_label.pack(side=tk.RIGHT, padx=(4, 0))
         self.status_label.bind("<Button-1>", self._start_drag)
         self.status_label.bind("<B1-Motion>", self._on_drag)
-
-        # Clickable Navigation Up/Down arrow buttons beside status - responsive full surface area
-        nav_btn_frame = tk.Frame(right_header, bg=bg_dark)
-        nav_btn_frame.pack(side=tk.RIGHT, padx=(0, 4))
-
-        self.btn_up = self._create_responsive_button(
-            parent=nav_btn_frame,
-            text="▲",
-            command=self._on_arrow_up,
-            default_bg=bg_card,
-            default_fg=fg_muted,
-            hover_bg=accent_blue,
-            hover_fg=fg_white,
-            active_bg="#4f46e5",
-            font_size=8,
-            padx=5,
-            pady=2,
-        )
-        self.btn_up.pack(side=tk.LEFT, padx=1)
-
-        self.btn_down = self._create_responsive_button(
-            parent=nav_btn_frame,
-            text="▼",
-            command=self._on_arrow_down,
-            default_bg=bg_card,
-            default_fg=fg_muted,
-            hover_bg=accent_blue,
-            hover_fg=fg_white,
-            active_bg="#4f46e5",
-            font_size=8,
-            padx=5,
-            pady=2,
-        )
-        self.btn_down.pack(side=tk.LEFT, padx=1)
 
         # =========================================================================
         # 2. Search Bar
@@ -536,11 +429,16 @@ class ModernPopupUI:
     def _update_listbox(self) -> None:
         """
         Refresh listbox items based on filtered snippets.
+        Each sidebar item contains only the timestamp for a clean, minimalist layout.
         """
         self.listbox.delete(0, tk.END)
         for snippet in self._filtered_snippets:
-            preview = snippet.get("preview", "")
-            self.listbox.insert(tk.END, f" 📝 {preview}")
+            ts = snippet.get("timestamp", "").strip("[]")
+            if ts:
+                item_label = f"  🕒 {ts}"
+            else:
+                item_label = "  🕒 Recent Entry"
+            self.listbox.insert(tk.END, item_label)
 
         if self._filtered_snippets:
             self.listbox.selection_set(0)
@@ -551,6 +449,7 @@ class ModernPopupUI:
     def _on_search_changed(self, *args) -> None:
         """
         Filter snippets dynamically as the user types in the search bar.
+        Matches against timestamp headers, body content, and full text.
         """
         query = self.search_var.get().strip().lower()
         if not query:
@@ -558,7 +457,9 @@ class ModernPopupUI:
         else:
             self._filtered_snippets = [
                 s for s in self._snippets
-                if query in s.get("text", "").lower() or query in s.get("preview", "").lower()
+                if query in s.get("text", "").lower()
+                or query in s.get("content", "").lower()
+                or query in s.get("timestamp", "").lower()
             ]
         self._update_listbox()
 
