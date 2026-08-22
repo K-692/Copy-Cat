@@ -4,14 +4,15 @@
 
 # 🐱 Copy Cat
 
-**A lightweight, cross-platform, asynchronous keystroke memory and instant retrieval system.**
+**A lightweight, cross-platform, asynchronous keystroke memory and instant retrieval system — going far beyond traditional clipboard history.**
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg?style=flat)]()
 [![UI](https://img.shields.io/badge/UI-Tkinter%20Dark%20Theme-indigo.svg?style=flat)]()
+[![Status](https://img.shields.io/badge/Status-In%20Active%20Daily%20Use-brightgreen.svg?style=flat)]()
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=flat)](LICENSE)
 
-*Silently records keystrokes directly into `memory.txt`, structures timestamped paragraphs with pause detection, handles continuous-typing backspace erasure and mouse interruptions, auto-purges entries older than 3 days, and provides instant retrieval via a sleek, compact bottom-left floating popup.*
+*Silently records keystrokes directly into persistent storage (`memory.txt`), structures timestamped paragraphs with pause detection, handles continuous-typing backspace erasure and mouse interruptions, retains your last 3 days of text even across complete system shutdowns, and provides instant retrieval via a sleek, compact bottom-left floating popup.*
 
 </div>
 
@@ -37,18 +38,30 @@
 
 ## 💡 Why Copy-Cat?
 
-> **Has it ever happened to you that you wrote something for a very long time, and then either forgot to save it or lost it completely due to an unexpected system crash or failure?**
+> **Has it ever happened to you that you wrote something for a very long time, and then either forgot to save it or lost it completely due to an unexpected system crash, sudden power outage, or accidental tab closure?**
 >
-> **Copy-Cat solves this problem once and for all by saving your keystrokes live in the background.**
+> **Copy-Cat solves this problem once and for all by automatically capturing your keystrokes live in the background.**
 >
 > This allows you to retrieve **at least 70%–100%** of your lost text depending on how you write *(which you will quickly understand and appreciate while using Copy-Cat 😁)*!
+
+### 🚀 Beyond Traditional Clipboard Managers
+Standard clipboard managers only remember text **after** you explicitly press `Cmd+C` / `Ctrl+C`. If your browser crashes, an editor freezes, or you accidentally navigate away while typing a long document, email, or message, traditional clipboard tools cannot help you because the text was never copied.
+
+**Copy-Cat works beyond copying:** it passively captures keystrokes as you type across any application, ensuring your thoughts are safeguarded without requiring any manual copy action.
+
+### 💾 Survives System Shutdowns & Reboots (3-Day History Retention)
+Everything you type is saved safely and persistently to disk (`memory.txt`). **Even if your system suffers a hard shutdown, crash, or is turned off for hours or days, you can retrieve texts from up to 3 days ago** as soon as you power your machine back on. The automated rolling cleanup continuously manages storage by pruning entries only when they surpass the 3-day (72-hour) mark.
+
+### 👤 In Active Daily Use
+> *"Currently, I am actively using Copy-Cat every single day as my primary safeguard. It has repeatedly saved lost drafts, complex prompts, and unsaved code snippets across unexpected application crashes and system reboots!"*
 
 ---
 
 ## 🌟 Key Features
 
-1. **Direct Timestamped Keystroke Recording**:
+1. **Direct Timestamped Keystroke Recording (Beyond Clipboard)**:
    - Captures letters, numbers, punctuation, symbols, whitespace, and Enter newlines directly into `memory.txt`.
+   - **No Manual Copy Needed**: Works automatically in the background across all applications without needing `Cmd+C` / `Ctrl+C`.
    - **`[DD-MM-YYYY HH:MM:SS]` Timestamps**: Every typing session starts with a formatted timestamp header.
    - **10-Second Pause Gap**: Whenever you pause typing for $> 10$ seconds, a blank line gap and a fresh timestamp header (`\n\n[DD-MM-YYYY HH:MM:SS]\n`) are automatically prepended to the new paragraph.
    - Filters out system shortcut combinations (e.g. `Cmd+C`, `Cmd+V`, `Cmd+Z`, `Ctrl+C`).
@@ -57,7 +70,8 @@
    - **Continuous Typing**: When typing continuously, pressing `Backspace` within 5 seconds erases the corresponding characters from the active line in `memory.txt` (never deleting into the timestamp header).
    - **Interruption Detection**: If a mouse click or non-character navigation key occurs before pressing `Backspace`, `memory.txt` writes a newline (`\n`), preserves the previous line, and enters subsequent characters on the new line.
 
-3. **Self-Contained Rolling 3-Day Expiration Pruning**:
+3. **Persistent 3-Day History & Rolling Expiration Pruning**:
+   - **Shutdown Resistant**: Persistently stores text on disk so your 3-day history remains intact even if your computer shuts down or crashes.
    - Zero requirement for secondary timer files.
    - Every paragraph block in `memory.txt` is tracked by its timestamp.
    - When 3 days (72 hours) elapse for a specific entry, **only that expired entry is pruned**, preserving newer entries.
