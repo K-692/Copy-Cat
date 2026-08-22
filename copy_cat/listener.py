@@ -144,6 +144,10 @@ class KeystrokeListener:
         Callback executed when a mouse button is pressed or released.
         A mouse click interrupts continuous typing mode.
         """
+        # Do not track mouse events if UI popup is currently active
+        if self.file_io.is_ui_active():
+            return
+
         if pressed:
             self.is_interrupted = True
             logger.debug("Mouse click registered at (%d, %d). State set to interrupted.", x, y)
@@ -174,12 +178,17 @@ class KeystrokeListener:
         """
         Callback executed whenever a key is pressed.
         - Checks for shortcut modifiers and multi-press hotkey.
+        - Suspends recording completely while UI popup is open.
         - Prepends [DD-MM-YYYY HH:MM:SS] timestamp on first keystroke or > 10s inactivity.
         - Writes characters directly to memory.txt.
         - Handles 5-second continuous typing Backspace character erasure.
         - Handles navigation key / mouse click interruption before Backspace to create a newline.
         """
         try:
+            # If UI popup is currently open and active, suspend all keystroke recording
+            if self.file_io.is_ui_active():
+                return
+
             now = time.time()
 
             # 1. Track shortcut modifier keys (Command, Control, Alt)

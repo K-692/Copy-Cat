@@ -13,6 +13,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Data file path (timer.txt is eliminated; memory.txt is self-contained with timestamps)
 MEMORY_FILE = BASE_DIR / "memory.txt"
 
+# Flag file indicating whether the UI popup is currently active
+UI_ACTIVE_FLAG_FILE = BASE_DIR / ".ui_active"
+
+
 # Timing and interval configurations (in seconds)
 PAUSE_THRESHOLD_SECONDS = 10.0          # Inactivity period that triggers a new timestamped paragraph (10 seconds)
 BACKSPACE_TIMEOUT_SECONDS = 5.0         # Maximum continuous typing interval allowed for backspace deletion (5 seconds)

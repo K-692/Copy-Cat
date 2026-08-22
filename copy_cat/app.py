@@ -8,6 +8,7 @@ import logging
 import signal
 import subprocess
 import sys
+import threading
 import time
 from typing import Optional
 
@@ -43,6 +44,7 @@ class CopyCatApp:
         Invoked by KeystrokeListener when the modifier key is pressed 3 times.
         Spawns the UI retrieval popup as an isolated subprocess so that Tkinter / Cocoa
         runs safely on its own main thread without causing threading crashes.
+        Suspends background keystroke listening while the UI popup is active.
         """
         logger.info("HotKey detected! Spawning Quick Retrieval popup subprocess...")
         try:
@@ -51,13 +53,28 @@ class CopyCatApp:
                 logger.info("Popup is already open on screen.")
                 return
 
+            self.file_io.set_ui_active(True)
             cmd = [sys.executable, str(BASE_DIR / "main.py"), "--popup"]
             self._popup_proc = subprocess.Popen(
                 cmd,
                 cwd=str(BASE_DIR),
             )
             logger.info("Spawned popup process (PID: %d)", self._popup_proc.pid)
+
+            # Spawn a thread to monitor when popup exits and reset UI active flag
+            def _watch_popup(proc: subprocess.Popen):
+                try:
+                    proc.wait()
+                except Exception:
+                    pass
+                finally:
+                    self.file_io.set_ui_active(False)
+                    logger.info("Popup process closed. Background listener resumed.")
+
+            threading.Thread(target=_watch_popup, args=(self._popup_proc,), daemon=True).start()
+
         except Exception as e:
+            self.file_io.set_ui_active(False)
             logger.error("Failed to spawn popup UI subprocess: %s", e)
 
     def start(self) -> None:

@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional
 from filelock import FileLock
 
-from copy_cat.config import MEMORY_FILE, MEMORY_WIPE_INTERVAL_SECONDS
+from copy_cat.config import MEMORY_FILE, MEMORY_WIPE_INTERVAL_SECONDS, UI_ACTIVE_FLAG_FILE
 
 
 class FileIO:
@@ -51,6 +51,34 @@ class FileIO:
             with self.memory_lock:
                 if not self.memory_path.exists():
                     self.memory_path.touch()
+
+    # --- UI Active State Tracking ---
+
+    def set_ui_active(self, active: bool) -> None:
+        """
+        Set or clear the runtime flag indicating whether the UI popup is active.
+        When active, the background keystroke listener suspends logging.
+        """
+        try:
+            if active:
+                UI_ACTIVE_FLAG_FILE.touch()
+            else:
+                if UI_ACTIVE_FLAG_FILE.exists():
+                    UI_ACTIVE_FLAG_FILE.unlink()
+        except Exception:
+            pass
+
+    def is_ui_active(self) -> bool:
+        """
+        Check if the UI popup is currently open and active.
+        
+        Returns:
+            bool: True if UI is currently active, False otherwise.
+        """
+        try:
+            return UI_ACTIVE_FLAG_FILE.exists()
+        except Exception:
+            return False
 
     # --- Direct Memory Operations ---
 

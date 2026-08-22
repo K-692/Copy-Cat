@@ -23,6 +23,7 @@ htmlcov/
 # Local Runtime Data Files & Locks
 memory.txt
 memory.txt.lock
+.ui_active
 timer.txt
 timer.txt.lock
 cache.txt

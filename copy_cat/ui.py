@@ -454,16 +454,20 @@ class ModernPopupUI:
         self.preview_text.bind("<Down>", self._on_arrow_down)
         self.preview_text.bind("<Up>", self._on_arrow_up)
 
-        # Force focus to search bar on startup
+        # Set focus to left listbox panel by default
         self.root.lift()
         self.root.attributes("-topmost", True)
         self.root.focus_force()
-        self.search_entry.focus_set()
+        self.listbox.focus_set()
+
+        # Flag UI as active so background listener suspends keystroke recording
+        self.file_io.set_ui_active(True)
 
         # Start Tk event loop
         try:
             self.root.mainloop()
         finally:
+            self.file_io.set_ui_active(False)
             self.is_open = False
 
     # =========================================================================
@@ -571,10 +575,11 @@ class ModernPopupUI:
     def _display_snippet_details(self, snippet: Dict[str, Any]) -> None:
         """
         Update preview text area contents and header metadata safely.
+        Displays the text under the timestamp that will be copied on Enter.
         """
-        text = snippet.get("text", "")
-        char_count = snippet.get("char_count", len(snippet.get("content", text)))
-        line_count = snippet.get("line_count", len(text.splitlines()) or 1)
+        content_text = snippet.get("content") or snippet.get("text", "")
+        char_count = snippet.get("char_count", len(content_text))
+        line_count = snippet.get("line_count", len(content_text.splitlines()) or 1)
         ts = snippet.get("timestamp", "")
 
         header_str = f"📝 {ts}  •  {char_count} chars" if ts else f"📝 memory.txt  •  {char_count} chars"
@@ -582,7 +587,7 @@ class ModernPopupUI:
 
         self.preview_text.config(state=tk.NORMAL)
         self.preview_text.delete("1.0", tk.END)
-        self.preview_text.insert(tk.END, text)
+        self.preview_text.insert(tk.END, content_text)
         self.preview_text.config(state=tk.DISABLED)
 
     def _display_empty_preview(self) -> None:
@@ -631,7 +636,7 @@ class ModernPopupUI:
 
     def _copy_selected(self) -> None:
         """
-        Copy selected snippet text (body content without timestamp if available) to clipboard.
+        Copy selected snippet text (the text under the timestamp) to clipboard.
         Flashes green confirmation status indicator without closing window.
         """
         selection = self.listbox.curselection()
@@ -640,10 +645,10 @@ class ModernPopupUI:
 
         index = selection[0]
         snippet = self._filtered_snippets[index]
-        # Prefer copying content without timestamp header, or full text if content is empty
+        # Copy the text under the timestamp
         selected_text = snippet.get("content") or snippet.get("text", "")
 
-        logger.info("Copying snippet to system clipboard (%d chars)...", len(selected_text))
+        logger.info("Copying snippet content to system clipboard (%d chars)...", len(selected_text))
         pyperclip.copy(selected_text)
 
         # Show visual copy confirmation badge on UI
@@ -672,6 +677,7 @@ class ModernPopupUI:
         """
         Destroy the popup window cleanly.
         """
+        self.file_io.set_ui_active(False)
         if self.root:
             try:
                 self.root.quit()
