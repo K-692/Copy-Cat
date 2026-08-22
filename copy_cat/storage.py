@@ -115,7 +115,10 @@ class FileIO:
         with self.memory_lock:
             if self.memory_path.exists() and self.memory_path.stat().st_size > 0:
                 current_content = self.memory_path.read_text(encoding="utf-8")
-                if current_content.endswith("\n\n"):
+                if not current_content.strip():
+                    # File contains only whitespace
+                    header_payload = f"{ts_str}\n"
+                elif current_content.endswith("\n\n"):
                     header_payload = f"{ts_str}\n"
                 elif current_content.endswith("\n"):
                     header_payload = f"\n{ts_str}\n"

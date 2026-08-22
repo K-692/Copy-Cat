@@ -159,14 +159,25 @@ class KeystrokeListener:
         except Exception as e:
             logger.error("Error in keystroke listener release handler: %s", e)
 
+    # Explicit navigation and control keys (arrows, home/end, page up/down, tab, etc.)
+    NAVIGATION_KEYS = {
+        getattr(keyboard.Key, name)
+        for name in (
+            "up", "down", "left", "right",
+            "page_up", "page_down", "home", "end",
+            "tab", "insert", "delete"
+        )
+        if hasattr(keyboard.Key, name)
+    }
+
     def _on_key_press(self, key: keyboard.Key) -> None:
         """
         Callback executed whenever a key is pressed.
         - Checks for shortcut modifiers and multi-press hotkey.
-        - Prepend [DD-MM-YYYY HH:MM:SS] timestamp on first keystroke or > 10s inactivity.
+        - Prepends [DD-MM-YYYY HH:MM:SS] timestamp on first keystroke or > 10s inactivity.
         - Writes characters directly to memory.txt.
         - Handles 5-second continuous typing Backspace character erasure.
-        - Handles mouse click / other key interruption before Backspace.
+        - Handles navigation key / mouse click interruption before Backspace to create a newline.
         """
         try:
             now = time.time()
@@ -176,7 +187,7 @@ class KeystrokeListener:
                 self._active_modifiers.add(key)
                 if self._is_modifier_key(key):
                     self._handle_modifier_press()
-                # Mark session as interrupted since a modifier key was pressed
+                # Modifier press flags session as interrupted
                 self.is_interrupted = True
                 return
 
@@ -185,9 +196,18 @@ class KeystrokeListener:
                 self.is_interrupted = True
                 return
 
-            # 3. Handle Enter key
+            # 3. Check for Navigation Keys or other special non-character keys (arrows, page up/down, home/end, tab, etc.)
+            if key in self.NAVIGATION_KEYS or (
+                isinstance(key, keyboard.Key)
+                and key not in (keyboard.Key.space, keyboard.Key.enter, keyboard.Key.backspace)
+            ):
+                self.is_interrupted = True
+                logger.debug("Navigation / special key pressed: %s. Interruption flag set.", key)
+                return
+
+            # 4. Handle Enter key
             if key == keyboard.Key.enter:
-                # If there was a long pause (> 10s), start a new timestamped paragraph
+                # If gap > 10 seconds or initial startup, prepend timestamp header
                 if self.last_keystroke_time == 0.0 or (now - self.last_keystroke_time) > self.pause_threshold:
                     self.file_io.append_timestamp_header()
                 else:
@@ -198,22 +218,22 @@ class KeystrokeListener:
                 self.is_interrupted = False
                 return
 
-            # 4. Handle Backspace key
+            # 5. Handle Backspace key
             if key == keyboard.Key.backspace:
                 elapsed = now - self.last_keystroke_time if self.last_keystroke_time > 0 else 999.0
 
-                # Scenario A: Mouse clicked or other keys pressed before pressing backspace
-                # Requirement: Create a newline, ignore backspace deletion, and enter new text on new line
+                # Scenario A: Navigation key pressed or mouse clicked before pressing backspace
+                # Requirement: In memory.txt, the cursor should go to the newline, ignore backspace deletion
                 if self.is_interrupted:
-                    logger.debug("Backspace pressed after interruption -> creating newline and ignoring deletion.")
+                    logger.debug("Backspace pressed after navigation/interruption -> appending newline in memory.txt.")
                     self.file_io.append_newline()
                     self.is_interrupted = False
                     self.current_line_chars = 0
                     self.last_keystroke_time = now
                     return
 
-                # Scenario B: Continuous typing and backspace pressed within 5 seconds
-                # Requirement: Erase characters from active line in memory.txt
+                # Scenario B: Continuous typing within 5 seconds without interruption
+                # Requirement: Erase character from active line in memory.txt
                 if elapsed <= self.backspace_timeout and self.current_line_chars > 0:
                     erased = self.file_io.erase_last_char_from_line()
                     if erased:
@@ -225,13 +245,7 @@ class KeystrokeListener:
                 # Scenario C: Inactivity gap > 5 seconds or no characters on active line
                 return
 
-            # 5. Check for 'other keys' (special keys like arrows, navigation, function keys, caps_lock, etc.)
-            if isinstance(key, keyboard.Key):
-                if key != keyboard.Key.space:
-                    self.is_interrupted = True
-                    return
-
-            # 6. Handle Printable Characters (Letters, Numbers, Symbols, Space)
+            # 6. Extract printable character (Letters, Numbers, Symbols, Space)
             char_to_record: Optional[str] = None
             if key == keyboard.Key.space:
                 char_to_record = " "
@@ -244,15 +258,15 @@ class KeystrokeListener:
                 self.is_interrupted = True
                 return
 
-            # 7. 10-Second Pause Gap & Startup Timestamp Logic:
-            # If gap between keystrokes > 10 seconds (or first keystroke ever), prepend [DD-MM-YYYY HH:MM:SS]\n
+            # 7. Check 10-Second Pause Gap & Initial Startup:
+            # Timestamps must come from the first keystroke itself and on > 10s inactivity.
             is_new_timestamp_block = (
                 self.last_keystroke_time == 0.0
                 or (now - self.last_keystroke_time) > self.pause_threshold
             )
 
             if is_new_timestamp_block:
-                logger.debug("10-second gap or start detected. Prepending timestamp header to memory.txt.")
+                logger.debug("First keystroke or > 10s gap detected. Prepending timestamp header to memory.txt.")
                 self.file_io.append_timestamp_header()
                 self.current_line_chars = 0
 
