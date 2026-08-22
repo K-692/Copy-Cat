@@ -201,9 +201,13 @@ class ModernPopupUI:
         header_title.bind("<Button-1>", self._start_drag)
         header_title.bind("<B1-Motion>", self._on_drag)
 
+        # Right subframe: Navigation buttons & status hints
+        right_header = tk.Frame(header_frame, bg=bg_dark)
+        right_header.pack(side=tk.RIGHT)
+
         # Close button [✕] in header
         close_btn = tk.Button(
-            header_frame,
+            right_header,
             text="✕",
             font=tkfont.Font(family=FONT_FAMILY_PRIMARY, size=10, weight="bold"),
             fg=fg_muted,
@@ -218,17 +222,55 @@ class ModernPopupUI:
         )
         close_btn.pack(side=tk.RIGHT, padx=(6, 0))
 
-        # Status / Feedback label in header
+        # Status / Feedback label with Navigation key beside Enter key
         self.status_label = tk.Label(
-            header_frame,
-            text="[Enter] Copy  •  [Esc] Close",
+            right_header,
+            text="[↑/↓] Navigate  •  [Enter] Copy  •  [Esc] Close",
             font=hint_font,
             fg=fg_muted,
             bg=bg_dark,
         )
-        self.status_label.pack(side=tk.RIGHT)
+        self.status_label.pack(side=tk.RIGHT, padx=(4, 0))
         self.status_label.bind("<Button-1>", self._start_drag)
         self.status_label.bind("<B1-Motion>", self._on_drag)
+
+        # Clickable Navigation Up/Down arrow buttons beside status
+        nav_btn_frame = tk.Frame(right_header, bg=bg_dark)
+        nav_btn_frame.pack(side=tk.RIGHT, padx=(0, 4))
+
+        self.btn_up = tk.Button(
+            nav_btn_frame,
+            text="▲",
+            font=tkfont.Font(family=FONT_FAMILY_PRIMARY, size=7, weight="bold"),
+            fg=fg_muted,
+            bg=bg_card,
+            activebackground=accent_blue,
+            activeforeground=fg_white,
+            relief=tk.FLAT,
+            bd=0,
+            padx=3,
+            pady=0,
+            cursor="hand2",
+            command=self._on_arrow_up,
+        )
+        self.btn_up.pack(side=tk.LEFT, padx=1)
+
+        self.btn_down = tk.Button(
+            nav_btn_frame,
+            text="▼",
+            font=tkfont.Font(family=FONT_FAMILY_PRIMARY, size=7, weight="bold"),
+            fg=fg_muted,
+            bg=bg_card,
+            activebackground=accent_blue,
+            activeforeground=fg_white,
+            relief=tk.FLAT,
+            bd=0,
+            padx=3,
+            pady=0,
+            cursor="hand2",
+            command=self._on_arrow_down,
+        )
+        self.btn_down.pack(side=tk.LEFT, padx=1)
 
         # =========================================================================
         # 2. Search Bar
@@ -568,7 +610,7 @@ class ModernPopupUI:
         def _reset():
             if self.root and self.is_open:
                 self.status_label.config(
-                    text="[Enter] Copy  •  [Esc] Close",
+                    text="[↑/↓] Navigate  •  [Enter] Copy  •  [Esc] Close",
                     fg="#a1a1aa",
                 )
 

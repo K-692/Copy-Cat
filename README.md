@@ -31,7 +31,6 @@
 - [🔒 macOS Permissions Notice](#-macos-permissions-notice)
 - [⚙️ Configuration Options](#️-configuration-options)
 - [⌨️ Keyboard Shortcuts](#️-keyboard-shortcuts)
-- [🚢 Ready for Git Push](#-ready-for-git-push)
 
 ---
 
@@ -285,26 +284,6 @@ All timing thresholds, geometry settings, and font mappings can be customized in
 | **Move Window** | Click and drag header | Click and drag header |
 | **Resize Window** | Drag bottom-right `⇲` handle | Drag bottom-right `⇲` handle |
 
----
-
-## 🚢 Ready for Git Push
-
-To push this repository to GitHub:
-
-```bash
-# 1. Initialize Git repository
-git init -b main
-
-# 2. Stage all files (memory.txt, venv, and cache are automatically excluded by .gitignore)
-git add .
-
-# 3. Create initial commit
-git commit -m "feat: initial release of Copy Cat with compact bottom-left UI and automated service scripts"
-
-# 4. Link your remote repository and push
-git remote add origin https://github.com/<your-username>/copy_cat.git
-git push -u origin main
-```
 
 ---
 
