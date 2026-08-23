@@ -20,6 +20,7 @@
 
 ## 📑 Table of Contents
 
+- [🎬 Demo](#-demo)
 - [💡 Why Copy-Cat?](#-why-copy-cat)
 - [🌟 Key Features](#-key-features)
 - [📁 Project Architecture](#-project-architecture)
@@ -33,6 +34,20 @@
 - [🔒 macOS Permissions Notice](#-macos-permissions-notice)
 - [⚙️ Configuration Options](#️-configuration-options)
 - [⌨️ Keyboard Shortcuts](#️-keyboard-shortcuts)
+
+---
+
+## 🎬 Demo
+
+<div align="center">
+
+<video src="Screen%20Recording.mov" controls="controls" width="100%" style="max-width: 840px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.25);">
+  Your browser does not support the video tag. <a href="Screen Recording.mov">Download or view the demo recording</a>.
+</video>
+
+<p><em>Watch Copy Cat in action — silent background keystroke recording and instant bottom-left popup retrieval.</em></p>
+
+</div>
 
 ---
 
@@ -109,6 +124,7 @@ copy_cat/
 │   ├── install_windows.bat    # Windows startup shortcut installer
 │   └── uninstall_windows.bat  # Windows startup shortcut uninstaller
 ├── logo.png                   # High-resolution application logo & branding
+├── Screen Recording.mov       # Application walkthrough & demo recording
 ├── main.py                    # Application entry point CLI
 ├── memory.txt                 # Persistent storage for logged text (created on runtime)
 ├── requirements.txt           # Python dependencies
